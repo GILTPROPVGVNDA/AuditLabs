@@ -5,6 +5,7 @@
 - Skrypty przygotowane są dla sieci 10.0.2.0/24.
 - Aby uruchomić dany skrypt należy mu nadać uprawnienia chmod +x
 - najlepiej uruchomić skrypt z uprawnieniami sudoera (nie koniecznie sudo, wystarczy uzytkownik)
+
 Wyniki są zapisane w następującej postaci:
 ```
 /tmp/
