@@ -26,7 +26,9 @@ Wyniki są zapisane w następującej postaci:
 ```
 Przydatne komendy:
 Włączenie całkowitego firewalla Windows (PowerShell):
+
 ```netsh advfirewall set allprofiles firewallpolicy blockinbound,blockoutbound```
+
 Włączenie całkowitego firewalla Linux (Bash):
 ```
 sudo iptables -F
