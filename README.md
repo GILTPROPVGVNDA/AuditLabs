@@ -7,7 +7,9 @@
 - najlepiej uruchomić skrypt z uprawnieniami sudoera (nie koniecznie sudo, wystarczy uzytkownik)
 
 Aby skorzystać ze skryptów dla pojedyncznych hostów należy skorzystać z następującej składni:
-sudo ./Lab<3/4>_single <IP_Hosta>
+
+```sudo ./Lab<3/4>_single <IP_Hosta>```
+
 Wyniki są zapisane w następującej postaci:
 ```
 /tmp/
