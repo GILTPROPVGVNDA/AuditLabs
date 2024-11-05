@@ -25,7 +25,7 @@ echo "Discovered hosts:"
 cat "$HOST_DISCOVERY_FILE"
 echo ""
 
-# Function to run Nmap port scans with a 5-minute timeout
+# Function to run Nmap port scans with a 30-sec timeout
 run_nmap_port_scan () {
     SCAN_FLAG=$1
     SCAN_NAME=$2
@@ -42,7 +42,7 @@ run_nmap_port_scan () {
 
     # Check if the scan completed successfully or timed out
     if [ $? -eq 124 ]; then
-        echo "Scan $SCAN_NAME on $HOST exceeded 5 minutes and was skipped."
+        echo "Scan $SCAN_NAME on $HOST exceeded 30 seconds and was skipped."
     else
         echo "Scan $SCAN_NAME on $HOST completed successfully."
     fi
