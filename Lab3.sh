@@ -1,47 +1,53 @@
 #!/bin/bash
 
-#Interfejs Kaliego na którym nasłuchujemy
 INTERFACE="eth0"
 
-# Foldery w których znajdować się będą wyniki
+# Set the directories for PCAP and scan results
 PCAP_DIR="/tmp/port_pcap"
 SCAN_DIR="/tmp/port_scan"
 
-# Tworzenie folderów dla wyników
+# Create directories for PCAP and scan results
 mkdir -p "$PCAP_DIR"
 mkdir -p "$SCAN_DIR"
 
-#Stworzenie pliku dla aktywnuch hostów: 
+# File to store discovered hosts
 HOST_DISCOVERY_FILE="$SCAN_DIR/active_hosts.txt"
 echo "Performing fast host discovery scan in the range 10.0.2.0/24..."
-sudo nmap -sn 10.0.2.0/24 -T5 | awk '/Nmap scan report/{print $NF}' > "$HOST_DISCOVERY_FILE"
+nmap -sn 10.0.2.0/24 -T5 | awk '/Nmap scan report/{print $NF}' > "$HOST_DISCOVERY_FILE"
 
-# Sprawdzenie czy plik istnieje
+# Check if any hosts were found
 if [ ! -s "$HOST_DISCOVERY_FILE" ]; then
     echo "No active hosts found. Exiting."
     exit 1
 fi
 
-#Wyswietlenie hostów
 echo "Discovered hosts:"
 cat "$HOST_DISCOVERY_FILE"
 echo ""
 
-#Funckja do wywoływania skanowania nmap wraz ze zbieraniem pakietów z tshark
+# Function to run Nmap port scans with a 5-minute timeout
 run_nmap_port_scan () {
     SCAN_FLAG=$1
     SCAN_NAME=$2
     HOST=$3
 
     echo "Starting Wireshark capture for $SCAN_NAME on host $HOST..."
-    sudo tshark -i $INTERFACE -w "$PCAP_DIR/capture_${SCAN_NAME}_$HOST.pcap" &
+    tshark -i $INTERFACE -w "$PCAP_DIR/capture_${SCAN_NAME}_$HOST.pcap" &
     WS_PID=$!
 
     sleep 2  # Ensure tshark is ready
 
-    echo "Running Nmap port scan ($SCAN_FLAG) on $HOST..."
-    sudo nmap $SCAN_FLAG -p- $HOST -oX "$SCAN_DIR/${SCAN_NAME}_$HOST.xml"
+    echo "Running Nmap port scan ($SCAN_FLAG) on $HOST with a 5-minute timeout..."
+    timeout 300 nmap $SCAN_FLAG -p- $HOST -oX "$SCAN_DIR/${SCAN_NAME}_$HOST.xml"
 
+    # Check if the scan completed successfully or timed out
+    if [ $? -eq 124 ]; then
+        echo "Scan $SCAN_NAME on $HOST exceeded 5 minutes and was skipped."
+    else
+        echo "Scan $SCAN_NAME on $HOST completed successfully."
+    fi
+
+    # Stop Wireshark capture
     echo "Stopping Wireshark capture for $SCAN_NAME on host $HOST..."
     kill $WS_PID
     echo "Capture saved to $PCAP_DIR/capture_${SCAN_NAME}_$HOST.pcap"
@@ -64,4 +70,3 @@ for HOST in $(cat "$HOST_DISCOVERY_FILE"); do
 done
 
 echo "All port scans completed and separate captures saved in $PCAP_DIR"
-
