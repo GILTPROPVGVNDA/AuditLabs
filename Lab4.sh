@@ -32,11 +32,11 @@ run_vuln_scan () {
     sleep 2  # Give tshark time to start
 
     echo "Running detailed Nmap vulnerability scan on $HOST..."
-    timeout 300 nmap -O -sV -sC $HOST -oX "$SCAN_DIR/$SCAN_NAME.xml"
+    timeout 180 nmap -O -sV -sC $HOST -oX "$SCAN_DIR/$SCAN_NAME.xml"
 
     # Check if Nmap scan completed successfully or timed out
     if [ $? -eq 124 ]; then
-        echo "Warning: Nmap scan $SCAN_NAME timed out after 5 minutes."
+        echo "Warning: Nmap scan $SCAN_NAME timed out after 3 minutes."
     else
         echo "Nmap scan $SCAN_NAME completed successfully."
     fi
