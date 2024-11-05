@@ -37,8 +37,8 @@ run_nmap_port_scan () {
 
     sleep 2  # Ensure tshark is ready
 
-    echo "Running Nmap port scan ($SCAN_FLAG) on $HOST with a 5-minute timeout..."
-    timeout 300 nmap $SCAN_FLAG -p- $HOST -oX "$SCAN_DIR/${SCAN_NAME}_$HOST.xml"
+    echo "Running Nmap port scan ($SCAN_FLAG) on $HOST with a 30-seconds timeout..."
+    timeout 30 nmap $SCAN_FLAG -p- $HOST -oX "$SCAN_DIR/${SCAN_NAME}_$HOST.xml"
 
     # Check if the scan completed successfully or timed out
     if [ $? -eq 124 ]; then
